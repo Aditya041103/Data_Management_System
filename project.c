@@ -251,7 +251,7 @@ void file_read_libdues(int roll, char *result)
 
             while (line[i] != '\0')
             {
-                if (charCount >= 15)
+                if (charCount >= 18)
                 {
                     result[j] = line[i];
                     j++;
@@ -366,36 +366,37 @@ void file_read_sportitems(int roll, char *result)
         printf("File not found\n");
         return;
     }
-	else{
-    char line[100];
-    int lineCount = 0;
-
-    while (fgets(line, sizeof(line), file))
+    else
     {
-        lineCount++;
-        if (lineCount == 11)
+        char line[100];
+        int lineCount = 0;
+
+        while (fgets(line, sizeof(line), file))
         {
-            int charCount = 0;
-            int i = 0;
-            int j = 0;
-
-            while (line[i] != '\0')
+            lineCount++;
+            if (lineCount == 11)
             {
-                if (charCount >= 20)
-                {
-                    result[j] = line[i];
-                    j++;
-                }
-                i++;
-                charCount++;
-            }
+                int charCount = 0;
+                int i = 0;
+                int j = 0;
 
-            result[j] = '\0';
-            break;
+                while (line[i] != '\0')
+                {
+                    if (charCount >= 20)
+                    {
+                        result[j] = line[i];
+                        j++;
+                    }
+                    i++;
+                    charCount++;
+                }
+
+                result[j] = '\0';
+                break;
+            }
         }
+        fclose(file);
     }
-    fclose(file);
-	}
 }
 
 // Function to enter data of a new student
@@ -434,12 +435,14 @@ void file_write_data(int new_roll)
     scanf("%s", sportitem);
     attendancepercentage = (float)presentdays / totalworkingdays;
 
-     if(attendancepercentage < 0.75){
-        shortattendance='Y';
+    if (attendancepercentage < 0.75)
+    {
+        shortattendance = 'Y';
     }
-    else{
-    shortattendance='N';
-	}
+    else
+    {
+        shortattendance = 'N';
+    }
     // Open the file in write mode
     file = fopen(filename, "w");
 
@@ -468,6 +471,7 @@ void file_write_data(int new_roll)
     printf("Data written to the file successfully.\n");
 }
 
+//main function
 int main()
 {
     int roll = 100;
@@ -476,174 +480,184 @@ int main()
     int count = 1;
     char more_choice;
     int num;
-    char c='y';
+    char c = 'y';
     // displaying menu
-    while(c=='y' || c=='Y'){
-	system("clear");
-    printf("*--------------------*---------------------*-----------------------*-----------------------*------------------------*------------------------*");
-    printf("\nMENU : \n");
-    printf("\n1.Print the names of all the students\n");
-    printf("\n2.Print the names and CGPA of all the students\n");
-    printf("\n3.Print the names and Branch of all the students\n");
-    printf("\n4.Print the names and Sports Items issued by all the students\n");
-    printf("\n5.Print the names and Library dues of all the students\n");
-    printf("\n6.Print the names of all the students along with Short-Attendance\n");
-    printf("\n7.Print the data of a particular student\n");
-    printf("\n8.Enter data of a new student\n");
-    printf("\n9. Exit\n");
-    printf("*--------------------*---------------------*-----------------------*-----------------------*------------------------*------------------------*");
-    printf("\nEnter the choice : ");
-    // Entering the choice
-    scanf("%d",&choice);
-
-    // counting the total number of files and assigning it to num
-    while (!file_null(count))
+    while (c == 'y' || c == 'Y')
     {
-        count += 1;
-    }
-    num = count - 1;
+        system("clear");
+        printf("*--------------------*---------------------*-----------------------*-----------------------*------------------------*------------------------*");
+        printf("\nMENU : \n");
+        printf("\n1.Print the names of all the students\n");
+        printf("\n2.Print the names and CGPA of all the students\n");
+        printf("\n3.Print the names the students of a particular branch\n");
+        printf("\n4.Print the names and Sports Items issued by all the students\n");
+        printf("\n5.Print the names and Library dues of the students\n");
+        printf("\n6.Print the names of all the students with Short-Attendance\n");
+        printf("\n7.Print the data of a particular student\n");
+        printf("\n8.Enter data of a new student\n");
+        printf("\n9. Exit\n");
+        printf("*--------------------*---------------------*-----------------------*-----------------------*------------------------*------------------------*");
+        printf("\nEnter the choice : ");
+        // Entering the choice
+        scanf("%d", &choice);
 
-    // making various cases according to the choice entered
-    if (choice == 1)
-    {
-        printf("\nThe names of the Students are : \n");
-        for (int i = 1; i <= num; i++)
+        // counting the total number of files and assigning it to num
+        while (!file_null(count))
         {
-            file_read_name(i, data1);
-            printf("%s", data1);
-            printf("\n");
-        }        
-    }
-    else if (choice == 2)
-    {
-        printf("\nThe names and CGPA of the Students are: \n");
-	printf("------------------------------------\n");
-
-        for (size_t i = 1; i <= num; i++)
-        {
-            file_read_name(i, data1);
-            file_read_cgpa(i, data2);
-            printf("NAME : %sCGPA :  %s",data1,data2);
-	    printf("------------------------------------\n");
+            count += 1;
         }
-    }
-    else if (choice == 3)
-    {
-        // Array to store branch information for each student
+        num = count - 1;
 
-        char branchData[num][50];
-
-        // Read and store branch information for all students
-        for (size_t i = 1; i <= num; i++)
+        // making various cases according to the choice entered
+        if (choice == 1)
         {
-            file_read_branch(i, branchData[i - 1]);
-        }
-
-        printf("\nThe names and branch of the Students are \n");
-        printf("------------------------------------\n");
-	for (size_t i = 1; i <= num; i++)
-        {
-
-            file_read_name(i, data1);
-            printf("NAME : %sBRANCH : %s\n", data1, branchData[i - 1]);
-	    printf("------------------------------------\n");
-        }
-    }
-    else if (choice == 4)
-    {
-        // Array to store sports information for each student
-
-        char sportsData[num][50];
-
-        // Read and store sports information for all students
-        for (size_t i = 1; i <= num; i++)
-        {
-            file_read_sportitems(i, sportsData[i - 1]);
-        }
-
-        printf("\nThe names and sports items issued by the Students are \n");
-        printf("------------------------------------\n");
-	for (size_t i = 1; i <= num; i++)
-        {
-
-            file_read_name(i, data1);
-            printf("\nNAME : %sSPORTS ITEMS : %s\n", data1, sportsData[i - 1]);
-	    printf("------------------------------------\n");
-        }
-    }
-    else if (choice == 5)
-    {
-        // Array to store library information for each student
-
-        char libraryData[num][10];
-
-        // Read and store library information for all students
-        for (size_t i = 1; i <= num; i++)
-        {
-            file_read_libdues(i, libraryData[i - 1]);
-        }
-
-        printf("\nThe names and library dues of the Students are \n");
-	printf("------------------------------------\n");
-        for (size_t i = 1; i <= num; i++)
-        {
-            file_read_name(i, data1);
-            printf("NAME : %sLIBRARY DUES : %s\n", data1, libraryData[i - 1]);
-	    printf("------------------------------------\n");
-        }
-    }
-    else if (choice == 6)
-    {
-        // Array to store short-attendance information for each student
-        char shortData[num][10];
-
-        // Read and store short-attendance information for all students
-        for (size_t i = 1; i <= num; i++)
-        {
-            file_read_short_attendance(i, shortData[i - 1]);
-        }
-
-        printf("\nThe names of the students with short attendance are:\n");
-	printf("------------------------------------\n");
-        for (size_t i = 1; i <= num; i++)
-        { 
-            file_read_name(i, data1);
-            if (strstr(shortData[i-1],"Y") || strstr(shortData[i-1],"yes") || strstr(shortData[i-1],"y")){
-                printf("NAME : %sSHORT ATTENDANCE : %s\n", data1, shortData[i - 1]);
-	        printf("------------------------------------\n");
+            printf("\nThe names of the Students are : \n");
+            for (int i = 1; i <= num; i++)
+            {
+                file_read_name(i, data1);
+                printf("%s", data1);
+                printf("\n");
             }
         }
-    }
-    else if (choice == 7)
-    {
-        int roll;
-        printf("Enter the roll number of the student : ");
-        scanf("%d",&roll);
-	printf("------------------------------------\n");
-        file_read(roll);
-	printf("\n------------------------------------\n");
-    }
+        else if (choice == 2)
+        {
+            printf("\nThe names and CGPA of the Students are: \n");
+            printf("------------------------------------\n");
 
-    else if (choice == 8)
-    {
-        // New text file is created based upon roll number
-        num += 1;
-        int new_roll;
-        printf("\nEnter the roll number : \n");
-        scanf("%d", &new_roll);
-        file_write_data(new_roll);
-    }
-    else if(choice == 9)
-	{
-	return 0;
-	}
-    else
-    {
-        printf("Invalid Input");
-    }
-    printf("********************************************");
-    printf("\nDO YOU WANT TO CONTINUE (Y/N)  :  ");
-    getchar();
-    scanf("%c",&c);
+            for (size_t i = 1; i <= num; i++)
+            {
+                file_read_name(i, data1);
+                file_read_cgpa(i, data2);
+                printf("NAME : %sCGPA :  %s", data1, data2);
+                printf("------------------------------------\n");
+            }
+        }
+        else if (choice == 3)
+        {
+            // Array to store branch information for each student
+
+            char branchData[num][50];
+            char branch[60];
+            printf("Enter the branch of the students: ");
+            scanf("%s", branch);
+
+            // Read and store branch information for all students
+            for (size_t i = 1; i <= num; i++)
+            {
+                file_read_branch(i, branchData[i - 1]);
+            }
+            printf("------------------------------------\n");
+            for (size_t i = 1; i <= num; i++)
+            {
+
+                file_read_name(i, data1);
+                if (strstr(branchData[i - 1], branch))
+                {
+                    printf("NAME : %sBRANCH : %s\n", data1, branchData[i - 1]);
+                    printf("------------------------------------\n");
+                }
+            }
+        }
+        else if (choice == 4)
+        {
+            // Array to store sports information for each student
+
+            char sportsData[num][50];
+
+            // Read and store sports information for all students
+            for (size_t i = 1; i <= num; i++)
+            {
+                file_read_sportitems(i, sportsData[i - 1]);
+            }
+
+            printf("\nThe names and sports items issued by the Students are \n");
+            printf("------------------------------------\n");
+            for (size_t i = 1; i <= num; i++)
+            {
+
+                file_read_name(i, data1);
+                printf("\nNAME : %sSPORTS ITEMS : %s\n", data1, sportsData[i - 1]);
+                printf("------------------------------------\n");
+            }
+        }
+        else if (choice == 5)
+        {
+
+            // Array to store library information for each student
+
+            char libraryData[num][10];
+            float libdue[num];
+
+            // Read and store library information for all students
+            for (size_t i = 1; i <= num; i++)
+            {
+                file_read_libdues(i, libraryData[i - 1]);
+                libdue[i - 1] = atof(libraryData[i - 1]);
+            }
+
+            printf("\nThe names and library dues of the Students are \n");
+            printf("------------------------------------\n");
+            for (size_t i = 1; i <= num; i++)
+            {
+                file_read_name(i, data1);
+                if (libdue[i - 1] != 0)
+                {
+                    printf("NAME : %sLIBRARY DUES : %.2f\n", data1, libdue[i - 1]);
+                    printf("------------------------------------\n");
+                }
+            }
+        }
+        else if (choice == 6)
+        {
+            // Array to store short-attendance information for each student
+            char shortData[num][10];
+
+            // Read and store short-attendance information for all students
+            for (size_t i = 1; i <= num; i++)
+            {
+                file_read_short_attendance(i, shortData[i - 1]);
+            }
+
+            printf("\nThe names of the students with short attendance are:\n");
+            printf("------------------------------------\n");
+            for (size_t i = 1; i <= num; i++)
+            {
+                file_read_name(i, data1);
+                if (strstr(shortData[i - 1], "Y") || strstr(shortData[i - 1], "yes") || strstr(shortData[i - 1], "y"))
+                {
+                    printf("NAME : %sSHORT ATTENDANCE : %s\n", data1, shortData[i - 1]);
+                    printf("------------------------------------\n");
+                }
+            }
+        }
+        else if (choice == 7)
+        {
+            int roll;
+            printf("Enter the roll number of the student : ");
+            scanf("%d", &roll);
+            printf("------------------------------------\n");
+            file_read(roll);
+            printf("\n------------------------------------\n");
+        }
+
+        else if (choice == 8)
+        {
+            // New text file is created based upon roll number
+            num += 1;
+            int new_roll = num;
+            file_write_data(new_roll);
+        }
+        else if (choice == 9)
+        {
+            return 0;
+        }
+        else
+        {
+            printf("Invalid Input");
+        }
+        printf("********************************************");
+        printf("\nDO YOU WANT TO CONTINUE (Y/N)  :  ");
+        getchar();
+        scanf("%c", &c);
     }
 }
